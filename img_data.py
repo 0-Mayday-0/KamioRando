@@ -7,8 +7,8 @@ from PIL import Image, ImageFile, ImageDraw
 from PIL.GifImagePlugin import GifImageFile
 from icecream import ic
 from time import sleep
-from random import randint, choice
-import numpy as np
+from random import choice
+
 
 class KamioR:
     def __init__(self) -> None:
@@ -26,8 +26,6 @@ class KamioR:
 
         response_status: Response = await response_task
 
-        ic(response_status.status_code)
-
         if response_status.status_code == 200:
             return response_status.content
 
@@ -41,7 +39,9 @@ class KamioR:
         except AssertionError:
             print("Something went wrong fetching from KamiokaNDE.")
 
-    def get_random_detect(self) -> hex:
+    async def get_random_detect(self) -> hex:
+        await self.create_image()
+
         random_pixel: tuple[int, int] = (choice(self.allowed_terrain[0]), choice(self.allowed_terrain[1]))
         detection: bool = self.image.getpixel(random_pixel) != 0
 
@@ -49,7 +49,7 @@ class KamioR:
             random_pixel = (choice(self.allowed_terrain[0]), choice(self.allowed_terrain[1]))
             detection: bool = self.image.getpixel(random_pixel) != 0
 
-        return hex(self.image.getpixel(random_pixel))
+        return self.image.getpixel(random_pixel)
 
     def debug_color_img(self) -> None:
         with self.image as img_handle:
@@ -66,11 +66,8 @@ async def main() -> None:
     rand: KamioR = KamioR()
 
     while True:
-        await rand.create_image()
-        #print(rand.allowed_terrain)
-        ic(rand.get_random_detect())
-        #rand.debug_color_img()
-        sleep(0.2)
+        ic(await rand.get_random_detect())
+        sleep(0.3)
 
 if __name__ == '__main__':
     run(main())
