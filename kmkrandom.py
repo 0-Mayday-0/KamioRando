@@ -1,8 +1,8 @@
 from random import randint, seed
 from img_data import KamioR
 from icecream import ic
-from asyncio import run
-from time import sleep
+from asyncio import run, sleep
+
 
 async def random_int(a: int, b: int) -> int:
     rand_obj: KamioR = KamioR()
@@ -15,7 +15,7 @@ async def random_int(a: int, b: int) -> int:
 async def main():
     while True:
         ic(await random_int(1, 100))
-        sleep(0.3)
+        await sleep(0.3)
 
 if __name__ == '__main__':
     run(main())
