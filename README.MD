@@ -14,6 +14,6 @@
 
 # How do you use it?
 
-### Simply download the .py files from the repo and store them wherever is convenient. Then import ==random_int()== from *kmkrandom*.
+### Simply download the .py files from the repo and store them wherever is convenient. Then import *random_int()* from *kmkrandom*.
 
-## Important: random_int() is an asynchronous function as it needs to fetch from a URL, remember to use ==await== on it.
+## Important: random_int() is an asynchronous function as it needs to fetch from a URL, remember to use *await* on it.
