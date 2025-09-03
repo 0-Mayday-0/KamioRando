@@ -14,7 +14,7 @@ class KamioR:
     def __init__(self) -> None:
         self.image: GifImageFile | None = None
         self.url: str = 'https://www-sk.icrr.u-tokyo.ac.jp/realtimemonitor/skev.gif'
-        self.allowed_terrain = [list(range(28, 799, 10)), list(range(252, 492, 10))]
+        self.allowed_terrain = [list(range(37, 1500, 3)), list(range(320, 635, 5))]
 
     async def _get_img_response(self) -> Response:
         response: Response = await to_thread(rget, self.url)
@@ -65,9 +65,8 @@ class KamioR:
 async def main() -> None:
     rand: KamioR = KamioR()
 
-    while True:
-        ic(await rand.get_random_detect())
-        sleep(0.3)
+    await rand.get_random_detect()
+    rand.debug_color_img()
 
 if __name__ == '__main__':
     run(main())
