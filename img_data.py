@@ -3,10 +3,8 @@ from requests import get as rget
 from requests import Response
 from asyncio import run, create_task, to_thread, Task
 from io import BytesIO
-from PIL import Image, ImageFile, ImageDraw
+from PIL import Image, ImageFile
 from PIL.GifImagePlugin import GifImageFile
-from icecream import ic
-from time import sleep
 from random import choice
 
 
@@ -28,6 +26,7 @@ class KamioR:
 
         if response_status.status_code == 200:
             return response_status.content
+        return None
 
     async def create_image(self) -> None:
         img_data: bytes = await self.get_img_bytes()
@@ -53,7 +52,6 @@ class KamioR:
 
     def debug_color_img(self) -> None:
         with self.image as img_handle:
-            draw = ImageDraw.Draw(img_handle)
             for y in self.allowed_terrain[1]:
                 for x in self.allowed_terrain[0]:
                     img_handle.putpixel((x, y), value=(255,255,255))
