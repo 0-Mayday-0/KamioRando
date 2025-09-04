@@ -12,7 +12,7 @@ class KamioR:
     def __init__(self) -> None:
         self.image: GifImageFile | None = None
         self.url: str = 'https://www-sk.icrr.u-tokyo.ac.jp/realtimemonitor/skev.gif'
-        self.allowed_terrain = [list(range(37, 1500, 3)), list(range(320, 635, 5))]
+        self.allowed_terrain = [list(range(23, 803, 3)), list(range(250, 495, 5))]
 
     async def _get_img_response(self) -> Response:
         response: Response = await to_thread(rget, self.url)
