@@ -6,15 +6,24 @@ from io import BytesIO
 from PIL import Image, ImageFile
 from PIL.GifImagePlugin import GifImageFile
 from random import choice
+from collections.abc import Generator
 
 from icecream import ic
+from time import sleep
 
 class KamioR:
     def __init__(self) -> None:
         self.image: GifImageFile | None = None
         self.url: str = 'https://www-sk.icrr.u-tokyo.ac.jp/realtimemonitor/skev.gif'
-        self.allowed_terrain = [list(range(23, 803, 3)), list(range(250, 495, 5))]
-        self.sizes: list[tuple[int, int]] = [(822, 743), (1656, 976)]
+        self.allowed_terrain: None | Generator[int, None, tuple[int, int]] = None
+        #self.sizes: list[tuple[int, int]] = [(822, 743), (1656, 976)]
+
+    def generate_terrain(self, size: tuple[int, int]) -> Generator[int, None, tuple[int, int]]:
+        terrains: dict[tuple[int, int], tuple[range, range]] = {(822, 743): (range(23, 803, 3), range(250, 495, 5)),
+                                                                (1656, 976): }
+
+        while True:
+            yield (choice(terrains[size]))
 
     async def _get_img_response(self) -> Response:
         response: Response = await to_thread(rget, self.url)
@@ -74,7 +83,15 @@ async def main() -> None:
     rand: KamioR = KamioR()
 
     #await rand.get_random_detect()
-    rand.debug_color_img()
+    #rand.debug_color_img()
+
+    rp = rand.generate_terrain((1656, 976))
+
+    while True:
+        ic(next(rp))
+
+        sleep(0.5)
+
 
 if __name__ == '__main__':
     run(main())
