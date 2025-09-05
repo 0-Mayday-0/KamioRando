@@ -7,12 +7,14 @@ from PIL import Image, ImageFile
 from PIL.GifImagePlugin import GifImageFile
 from random import choice
 
+from icecream import ic
 
 class KamioR:
     def __init__(self) -> None:
         self.image: GifImageFile | None = None
         self.url: str = 'https://www-sk.icrr.u-tokyo.ac.jp/realtimemonitor/skev.gif'
         self.allowed_terrain = [list(range(23, 803, 3)), list(range(250, 495, 5))]
+        self.sizes: list[tuple[int, int]] = [(822, 743), (1656, 976)]
 
     async def _get_img_response(self) -> Response:
         response: Response = await to_thread(rget, self.url)
@@ -34,6 +36,8 @@ class KamioR:
         try:
             assert img_data
             self.image: ImageFile = Image.open(BytesIO(img_data))
+            self.allowed_terrain = self.allowed_terrain if self.image.size == self.sizes[0] else [list(range(23, 803, 3)),
+                                                                                                  list(range(250, 495, 5))]
 
         except AssertionError:
             print("Something went wrong fetching from KamiokaNDE.")
@@ -51,6 +55,12 @@ class KamioR:
         return self.image.getpixel(random_pixel)
 
     def debug_color_img(self) -> None:
+        with open("debug/HIGHRES.gif", 'rb') as img_handle:
+            self.image = Image.open(BytesIO(img_handle.read()))
+            ic(self.image.size)
+
+        self.allowed_terrain = self.allowed_terrain if self.image.size == self.sizes[0] else [list(range(40, 1620, 3)),
+                                                                                              list(range(330, 650, 5))]
         with self.image as img_handle:
             for y in self.allowed_terrain[1]:
                 for x in self.allowed_terrain[0]:
@@ -63,7 +73,7 @@ class KamioR:
 async def main() -> None:
     rand: KamioR = KamioR()
 
-    await rand.get_random_detect()
+    #await rand.get_random_detect()
     rand.debug_color_img()
 
 if __name__ == '__main__':

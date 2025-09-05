@@ -14,8 +14,8 @@ async def random_int(a: int, b: int) -> int:
 
 async def main():
     while True:
-        ic(await random_int(1, 100))
-        await sleep(0.3)
+        ic(await random_int(1, 7000))
+
 
 if __name__ == '__main__':
     run(main())
