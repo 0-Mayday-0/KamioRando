@@ -1,6 +1,7 @@
 # How it works:
 
 >### We first begin by creating a list of what we'll call "allowed terrain". This list will contain all the pixels that are valid to be sampled. A visualization of the valid sample pixels is provided below:
+># Per the latest update, the allowed terrain is no longer loaded into memory, but held in a generator function instead that outputs one random pixel at a time when next() is called on it.
 > ![sampling pixels](./examples/sample%20pixels.png)
 >### We are only using the center part of the detector as this contains more than enough pixels to sample and I do not want to include circular terrain in the script.
 
