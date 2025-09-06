@@ -15,15 +15,17 @@ class KamioR:
     def __init__(self) -> None:
         self.image: GifImageFile | None = None
         self.url: str = 'https://www-sk.icrr.u-tokyo.ac.jp/realtimemonitor/skev.gif'
-        self.allowed_terrain: None | Generator[int, None, tuple[int, int]] = None
-        #self.sizes: list[tuple[int, int]] = [(822, 743), (1656, 976)]
+        self.allowed_terrain: None | Generator[tuple[int, int], None, tuple[int, int]] = None
+        self.sizes: list[tuple[int, int]] = [(822, 743), (1656, 976)]
+        self.ranges: list[tuple[range, range]] = [(range(250, 495, 5), range(23, 803, 3)),
+                                                   (range(330, 650, 5), range(40, 1620, 3))]
 
-    def generate_terrain(self, size: tuple[int, int]) -> Generator[int, None, tuple[int, int]]:
-        terrains: dict[tuple[int, int], tuple[range, range]] = {(822, 743): (range(23, 803, 3), range(250, 495, 5)),
-                                                                (1656, 976): }
+        self.terrains: dict[tuple[int, int], tuple[range, range]] = {sz: rg for sz, rg in zip(self.sizes, self.ranges)}
 
+    def generate_terrain(self, size: tuple[int, int]) -> Generator[tuple[int, int], None, tuple[int, int]]:
         while True:
-            yield (choice(terrains[size]))
+            yield choice(self.terrains[size][0]), choice(self.terrains[size][1])
+
 
     async def _get_img_response(self) -> Response:
         response: Response = await to_thread(rget, self.url)
@@ -45,8 +47,8 @@ class KamioR:
         try:
             assert img_data
             self.image: ImageFile = Image.open(BytesIO(img_data))
-            self.allowed_terrain = self.allowed_terrain if self.image.size == self.sizes[0] else [list(range(23, 803, 3)),
-                                                                                                  list(range(250, 495, 5))]
+            size = self.image.size
+            self.allowed_terrain = self.generate_terrain(size)
 
         except AssertionError:
             print("Something went wrong fetching from KamiokaNDE.")
@@ -54,25 +56,28 @@ class KamioR:
     async def get_random_detect(self) -> hex:
         await self.create_image()
 
-        random_pixel: tuple[int, int] = (choice(self.allowed_terrain[0]), choice(self.allowed_terrain[1]))
+        random_pixel: tuple[int, int] = next(self.allowed_terrain)
         detection: bool = self.image.getpixel(random_pixel) != 0
 
         while not detection:
-            random_pixel = (choice(self.allowed_terrain[0]), choice(self.allowed_terrain[1]))
+            random_pixel = next(self.allowed_terrain)
             detection: bool = self.image.getpixel(random_pixel) != 0
 
         return self.image.getpixel(random_pixel)
 
     def debug_color_img(self) -> None:
-        with open("debug/HIGHRES.gif", 'rb') as img_handle:
+        with open("debug/LOWRES.gif", 'rb') as img_handle:
             self.image = Image.open(BytesIO(img_handle.read()))
-            ic(self.image.size)
 
-        self.allowed_terrain = self.allowed_terrain if self.image.size == self.sizes[0] else [list(range(40, 1620, 3)),
-                                                                                              list(range(330, 650, 5))]
+            size = self.image.size
+
+            ic(size)
+            ic(self.terrains[size])
+
+
         with self.image as img_handle:
-            for y in self.allowed_terrain[1]:
-                for x in self.allowed_terrain[0]:
+            for y in self.terrains[size][0]:
+                for x in self.terrains[size][1]:
                     img_handle.putpixel((x, y), value=(255,255,255))
 
             img_handle.show()
@@ -82,15 +87,11 @@ class KamioR:
 async def main() -> None:
     rand: KamioR = KamioR()
 
-    #await rand.get_random_detect()
-    #rand.debug_color_img()
-
-    rp = rand.generate_terrain((1656, 976))
 
     while True:
-        ic(next(rp))
-
+        await rand.get_random_detect()
         sleep(0.5)
+
 
 
 if __name__ == '__main__':
