@@ -8,8 +8,6 @@ from PIL.GifImagePlugin import GifImageFile
 from random import choice
 from collections.abc import Generator
 
-from icecream import ic
-from time import sleep
 
 class KamioR:
     def __init__(self) -> None:
@@ -17,10 +15,11 @@ class KamioR:
         self.url: str = 'https://www-sk.icrr.u-tokyo.ac.jp/realtimemonitor/skev.gif'
         self.allowed_terrain: None | Generator[tuple[int, int], None, tuple[int, int]] = None
         self.sizes: list[tuple[int, int]] = [(822, 743), (1656, 976)]
-        self.ranges: list[tuple[range, range]] = [(range(250, 495, 5), range(23, 803, 3)),
-                                                   (range(330, 650, 5), range(40, 1620, 3))]
+        self.ranges: list[tuple[range, range]] = [(range(23, 803, 3), (range(250, 495, 5))),
+                                                 (range(40, 1620, 3), range(330, 650, 5))]
 
-        self.terrains: dict[tuple[int, int], tuple[range, range]] = {sz: rg for sz, rg in zip(self.sizes, self.ranges)}
+        self.terrains: dict[tuple[int, int], tuple[range, range]] = {sz: (rg[0], rg[1]) for sz, rg in zip(self.sizes, self.ranges)}
+
 
     def generate_terrain(self, size: tuple[int, int]) -> Generator[tuple[int, int], None, tuple[int, int]]:
         while True:
@@ -66,18 +65,14 @@ class KamioR:
         return self.image.getpixel(random_pixel)
 
     def debug_color_img(self) -> None:
-        with open("debug/LOWRES.gif", 'rb') as img_handle:
+        with open("debug/HIGHRES.gif", 'rb') as img_handle:
             self.image = Image.open(BytesIO(img_handle.read()))
 
             size = self.image.size
 
-            ic(size)
-            ic(self.terrains[size])
-
-
         with self.image as img_handle:
-            for y in self.terrains[size][0]:
-                for x in self.terrains[size][1]:
+            for x in self.terrains[size][0]:
+                for y in self.terrains[size][1]:
                     img_handle.putpixel((x, y), value=(255,255,255))
 
             img_handle.show()
@@ -89,8 +84,7 @@ async def main() -> None:
 
 
     while True:
-        await rand.get_random_detect()
-        sleep(0.5)
+        print(await rand.get_random_detect())
 
 
 

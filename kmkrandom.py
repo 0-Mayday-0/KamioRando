@@ -1,6 +1,5 @@
 from random import randint, seed
 from img_data import KamioR
-from icecream import ic
 from asyncio import run, sleep
 
 
@@ -14,7 +13,7 @@ async def random_int(a: int, b: int) -> int:
 
 async def main():
     while True:
-        ic(await random_int(1, 7000))
+        print(await random_int(1, 7000))
 
 
 if __name__ == '__main__':
