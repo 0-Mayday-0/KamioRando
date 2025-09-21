@@ -14,10 +14,11 @@ class KamioR:
         self.image: GifImageFile | None = None
         self.url: str = 'https://www-sk.icrr.u-tokyo.ac.jp/realtimemonitor/skev.gif'
         self.allowed_terrain: None | Generator[tuple[int, int], None, tuple[int, int]] = None
-        self.sizes: list[tuple[int, int]] = [(822, 743), (1656, 976), (1209, 1018)]
+        self.sizes: list[tuple[int, int]] = [(822, 743), (1656, 976), (1209, 1018), (1658, 993)]
         self.ranges: list[tuple[range, range]] = [(range(23, 803, 3), (range(250, 495, 5))),
                                                  (range(40, 1620, 3), range(330, 650, 5)),
-                                                  (range(32, 1180, 3), range(343, 675, 5))]
+                                                  (range(32, 1180, 3), range(343, 675, 5)),
+                                                  (range(40, 1620, 3), range(330, 650, 5))]
 
         self.terrains: dict[tuple[int, int], tuple[range, range]] = {sz: (rg[0], rg[1]) for sz, rg in zip(self.sizes, self.ranges)}
 
